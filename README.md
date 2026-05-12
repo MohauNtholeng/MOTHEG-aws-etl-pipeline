@@ -1,1 +1,46 @@
-# MOTHEG-aws-etl-pipeline
+# MOTHEG AWS ETL Pipeline
+
+Production-style AWS ETL scaffold implementing ingestion, transformation, orchestration, security, observability, CI/CD, and local validation.
+
+## Clarified requirements (implemented assumptions)
+- **Data source**: JSONL event files landing in S3 raw prefix.
+- **Transform rules**: schema validation + normalization of `event_date` + quality checks.
+- **Refresh frequency**: every 15 minutes via EventBridge.
+- **Data volume**: designed for low/medium batch throughput (~1-5 GB/day baseline assumption).
+- **Destinations**: S3 curated zone with Athena/Redshift external-query readiness.
+
+## Architecture
+- **Ingestion**: Glue job validates schema and enforces idempotency.
+- **Processing**: Glue transformation job applies quality rules and partitions by `event_date`.
+- **Storage**: KMS-encrypted S3 data lake.
+- **Orchestration**: Step Functions state machine.
+- **Scheduling**: EventBridge rule.
+- **Observability**: CloudWatch logs and failed execution alarm.
+- **Failure handling**: SQS DLQ.
+- **Security**: least-privilege IAM, KMS, Secrets Manager, S3 public-access block.
+
+## Repository structure
+- `src/motheg_etl/` - ETL code (ingestion/transformation/orchestration)
+- `infrastructure/terraform/` - AWS infrastructure definitions
+- `infrastructure/stepfunctions/` - ASL state machine definition
+- `.github/workflows/` - CI and deploy pipelines
+- `config/pipeline.json` - pipeline configuration assumptions
+- `samples/input/events.jsonl` - sample data for end-to-end local validation
+- `docs/architecture.md` - architecture notes
+- `docs/runbook.md` - operational runbook
+
+## Local validation
+```bash
+python -m pip install -e .[dev]
+make check
+python -m motheg_etl
+```
+
+## Terraform
+```bash
+cd infrastructure/terraform
+terraform init
+terraform apply -var="environment=dev"
+```
+
+> Note: Use environment-specific workspaces and IAM/OIDC configuration in GitHub environments for `dev`, `stage`, and `prod`.
