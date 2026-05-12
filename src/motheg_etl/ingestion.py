@@ -73,8 +73,9 @@ def validate_record(record: dict[str, Any], schema: dict[str, Any]) -> None:
         if field not in record or not isinstance(expected_type, str):
             continue
         if not _json_type_matches(record[field], expected_type):
+            actual_type = type(record[field]).__name__
             raise SchemaValidationError(
-                f"field '{field}' expected type '{expected_type}', got '{type(record[field]).__name__}'"
+                f"field '{field}' expected type '{expected_type}', got '{actual_type}'"
             )
 
 

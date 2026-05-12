@@ -28,7 +28,10 @@ def test_transformation_partitions_and_quality_checks(tmp_path: Path) -> None:
     stats = run_transformation(
         source,
         out,
-        quality_rules={"required": ["id", "event_date", "amount", "source"], "non_negative": ["amount"]},
+        quality_rules={
+            "required": ["id", "event_date", "amount", "source"],
+            "non_negative": ["amount"],
+        },
     )
 
     assert stats.total_records == 2

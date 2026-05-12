@@ -5,7 +5,6 @@ from pathlib import Path
 
 from motheg_etl.ingestion import ingest_records
 
-
 SCHEMA = {
     "required": ["id", "event_date", "amount", "source"],
     "properties": {
