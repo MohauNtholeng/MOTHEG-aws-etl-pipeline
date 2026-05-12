@@ -1,0 +1,46 @@
+{
+  "Comment": "MOTHEG ETL pipeline orchestration",
+  "StartAt": "RunIngestionGlueJob",
+  "States": {
+    "RunIngestionGlueJob": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::glue:startJobRun.sync",
+      "Parameters": {
+        "JobName": "${ingestion_job_name}"
+      },
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "PublishFailure"
+        }
+      ],
+      "Next": "RunTransformationGlueJob"
+    },
+    "RunTransformationGlueJob": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::glue:startJobRun.sync",
+      "Parameters": {
+        "JobName": "${transformation_job_name}"
+      },
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "PublishFailure"
+        }
+      ],
+      "Next": "Success"
+    },
+    "PublishFailure": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${dlq_url}",
+        "MessageBody.$": "$"
+      },
+      "End": true
+    },
+    "Success": {
+      "Type": "Succeed"
+    }
+  }
+}

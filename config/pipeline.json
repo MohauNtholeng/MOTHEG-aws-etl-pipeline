@@ -1,0 +1,27 @@
+{
+  "requirements": {
+    "source": "Batch JSONL data landing in S3 raw prefix",
+    "refresh_frequency": "Every 15 minutes (EventBridge schedule)",
+    "expected_daily_volume": "~1-5 GB/day",
+    "destination": ["S3 curated", "Athena", "Redshift external schema"]
+  },
+  "ingestion": {
+    "schema": {
+      "required": ["id", "event_date", "amount", "source"],
+      "properties": {
+        "id": "str",
+        "event_date": "str",
+        "amount": "number",
+        "source": "str"
+      }
+    },
+    "idempotency_fields": ["id", "event_date"]
+  },
+  "transformation": {
+    "partition_field": "event_date",
+    "quality_rules": {
+      "required": ["id", "event_date", "amount", "source"],
+      "non_negative": ["amount"]
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{"id":"evt-001","event_date":"2026-05-10T00:05:00Z","amount":23.5,"source":"orders-api"}
+{"id":"evt-002","event_date":"2026-05-10T00:15:00Z","amount":14.0,"source":"orders-api"}
+{"id":"evt-003","event_date":"2026-05-11T01:15:00Z","amount":8.75,"source":"billing-api"}
+{"id":"evt-003","event_date":"2026-05-11T01:15:00Z","amount":8.75,"source":"billing-api"}
+{"id":"evt-004","event_date":"2026-05-11T01:20:00Z","amount":-2,"source":"billing-api"}
